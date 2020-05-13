@@ -1,7 +1,7 @@
 # FindDots-with-opencv
 Find dots at image, Android,Kotlin,Opencv   
    
-Find contours and check each size if it is within certain range.   
+Find contours and check that each size is within a certain range.   
 
 # Test    
 
