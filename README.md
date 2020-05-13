@@ -9,4 +9,4 @@ Find dots at image, Android,Kotlin,Opencv
 
 ## Test Screen   
 
-<img src="./img/test.gif" width="80%" height="80%">
+<img src="./img/test.gif" width="50%" height="50%">
