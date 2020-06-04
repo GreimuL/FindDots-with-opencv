@@ -129,3 +129,49 @@ Java_com_greimul_finddots_MainActivity_findDots(JNIEnv *env, jobject thiz, jlong
     env->SetDoubleArrayRegion(retData,0,3,tmpData);
     return retData;
 }
+
+extern "C"
+JNIEXPORT jdoubleArray JNICALL
+Java_com_greimul_finddots_CameraActivity_findDots(JNIEnv *env, jobject thiz, jlong input) {
+
+    vector<vector<Point>> contours;
+    vector<Vec4i> hierarchy;
+    vector<vector<Point>> points;
+    vector<pair<double,double>> dots;
+
+    Mat &inputMat = *(Mat*)input;
+    Mat grayMat = Mat();
+    Mat resMat = Mat();
+
+    cvtColor(inputMat,grayMat,COLOR_RGB2GRAY);
+    adaptiveThreshold(grayMat,resMat,255,ADAPTIVE_THRESH_MEAN_C,THRESH_BINARY,55,10);
+
+    findContours(resMat,contours,hierarchy,RETR_LIST,CHAIN_APPROX_SIMPLE);
+
+    int minSize = 1;
+    int maxSize = 500;
+
+    for(vector<Point> i:contours){
+        if(contourArea(i)>minSize&&contourArea(i)<maxSize){
+            dots.push_back(make_pair(i[i.size()/2].x,i[i.size()/2].y));
+        }
+    }
+
+    random_device rd;
+    mt19937 gen(rd());
+    shuffle(dots.begin(),dots.end(), gen);
+
+    pair<pair<double,double>,double> circle = findCircle(dots);
+
+    jdoubleArray retData;
+    retData = env->NewDoubleArray(3);
+
+    jdouble tmpData[3];
+
+    tmpData[0] = circle.first.first;
+    tmpData[1] = circle.first.second;
+    tmpData[2] = circle.second;
+
+    env->SetDoubleArrayRegion(retData,0,3,tmpData);
+    return retData;
+}
